@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>رسالة ل اوزعتي ❤️</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #frame {
+      background-color: black;
+      border: 5px solid #FF69B4;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      color: white;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #FF69B4;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 15px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+    }
+    #img, #video {
+      margin: 20px 0;
+      max-width: 80%;
+      border-radius: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="frame">
+    <div id="app">
+      <h1 id="question"></h1>
+      <img id="img" src="cartoon1.png" />
+      <video id="video" width="100%" controls muted></video>
+      <div id="buttons"></div>
+    </div>
+  </div>
+  <script>
+    const music = new Audio();
+    const question = document.getElementById("question");
+    const buttons = document.getElementById("buttons");
+    const img = document.getElementById("img");
+    const video = document.getElementById("video");
+
+    const steps = {
+      start: { q: "انتي بطه؟ 🦆", img: "cartoon1.png", options: [ { t: "اه", n: "confirm_call" }, { t: "لا", n: "go_out" } ] },
+      go_out: { q: "اطلعي برا ده مكان اوزعتي حبيبتي", options: [ { t: "ارجعي", n: "start" } ] },
+      confirm_call: { q: "زين بيحب يندهلك يقولك يا ايه؟", options: [ { t: "بطه", n: "shaky" }, { t: "يا اوزعة", n: "shaky_yes" }, { t: "بطوط", n: "shaky" } ] },
+      shaky: { q: "انا شاكك فيكي 😅 بس كملّي عادي", options: [ { t: "كملّي", n: "love_question" } ] },
+      shaky_yes: { q: "ايوه كده انتي اوزعتي بجد 😍", options: [ { t: "كملّي", n: "love_question" } ] },
+      love_question: { q: "بتحبي زين ولا لا؟", options: [ { t: "بحبه", n: "he_loves_you" }, { t: "لا مش بحبه", n: "retry_love" }, { t: "بموت فيه", n: "he_dies_for_you" } ] },
+      retry_love: { q: "لا ارجعي دوسي اه", options: [ { t: "اه", n: "he_loves_you" } ] },
+      he_loves_you: { q: "وهو بيحبك اكتر علي فكرة", options: [ { t: "كملّي", n: "marriage_question" } ] },
+      he_dies_for_you: { q: "وهو بيموت فيكي اكتر 😍", options: [ { t: "كملّي", n: "marriage_question" } ] },
+      marriage_question: { q: "نفسك تكملي مع زين وتتجوزيه؟", options: [ { t: "ايوا عايزاه", n: "final_question" }, { t: "لا مش عايزاه", n: "forced_marriage" }, { t: "ايوا مش عايزه غيره", n: "final_question" } ] },
+      forced_marriage: { q: "مش بمزاجك 😅 هو هيتجوزك", options: [ { t: "كملّي", n: "final_question" } ] },
+      final_question: { q: "آخر حاجة علشان الرسالة دي سرية لازم تختاري التاريخ اللي عرفتي فيه زين", options: [ { t: "21/12/2021", n: "wrong_date" }, { t: "22/12/2021", n: "wrong_date" }, { t: "24/12/2021", n: "correct_date" } ] },
+      wrong_date: { q: "ياخسارة خذلتيني 😢", options: [ { t: "ارجعي", n: "final_question" } ] },
+      correct_date: { q: "بحبك يا اوزعتي ❤️", video: "final.mp4", options: [], playVideo: true }
+    };
+
+    function show(step) {
+      const s = steps[step];
+      question.innerText = s.q;
+      buttons.innerHTML = "";
+
+      if(s.img){ img.src = s.img; img.style.display = "block"; } else { img.style.display = "none"; }
+      if(s.video){ video.src = s.video; video.style.display = "block"; video.autoplay = true; video.play(); } else { video.style.display = "none"; video.pause(); video.currentTime = 0; }
+
+      s.options.forEach(o => {
+        const btn = document.createElement("button");
+        btn.innerText = o.t;
+        btn.onclick = () => show(o.n);
+        buttons.appendChild(btn);
+      });
+    }
+
+    show("start");
+  </script>
+</body>
+</html>
