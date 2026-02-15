@@ -18,7 +18,7 @@ button{background:#FF69B4;color:#fff;padding:10px 20px;margin:10px;border:none;b
 #hanger{position:fixed;top:0;right:40px;width:80px;animation:swing 3s ease-in-out infinite alternate;z-index:5}
 @keyframes swing{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
 
-#tease{position:fixed;top:10px;left:-120px;width:90px;display:none;z-index:6}
+#tease{position:fixed;top:10px;left:-120px;width:90px;display:none;z-index:6;transition:left .8s}
 </style>
 </head>
 <body>
@@ -46,16 +46,13 @@ const tease=document.getElementById("tease");
 const words=["Oz3aa","Batooty","BatooT"];
 let noClicks=0;
 let teaseShown=false;
+let teaseInterval=null;
 let isTouch='ontouchstart' in window;
 
-/* preload sound */
 const clickAudio=new Audio("click.mp3");
-function clickSound(){
- clickAudio.currentTime=0;
- clickAudio.play().catch(()=>{});
-}
+function clickSound(){clickAudio.currentTime=0;clickAudio.play().catch(()=>{})}
 
-/* random hearts */
+/* hearts spawn */
 function spawnHeart(){
  const h=document.createElement("div");
  h.className="heart";
@@ -75,7 +72,7 @@ function spawnHeart(){
 }
 setInterval(spawnHeart,900);
 
-/* touch hearts FIXED */
+/* touch hearts everywhere including frame */
 function makeTouchHeart(x,y){
  const h=document.createElement("div");
  h.className="heart";
@@ -86,42 +83,36 @@ function makeTouchHeart(x,y){
  setTimeout(()=>h.remove(),2000);
 }
 
-let touching=false;
+function touchHearts(e){
+ const x=e.clientX || (e.touches && e.touches[0].clientX);
+ const y=e.clientY || (e.touches && e.touches[0].clientY);
+ if(!x) return;
+ makeTouchHeart(x,y);
+}
 
-document.addEventListener("touchstart",e=>{
- touching=true;
- const t=e.touches[0];
- for(let i=0;i<6;i++) makeTouchHeart(t.clientX,t.clientY);
-});
+document.addEventListener("pointerdown",e=>{for(let i=0;i<6;i++) touchHearts(e)});
+document.addEventListener("pointermove",e=>{if(e.pressure>0||e.buttons) touchHearts(e)});
+frame.addEventListener("pointerdown",e=>{for(let i=0;i<6;i++) touchHearts(e)});
+frame.addEventListener("pointermove",e=>{if(e.pressure>0||e.buttons) touchHearts(e)});
 
-document.addEventListener("touchmove",e=>{
- if(!touching) return;
- const t=e.touches[0];
- makeTouchHeart(t.clientX,t.clientY);
-});
-
-document.addEventListener("touchend",()=>touching=false);
-
-/* mouse */
-document.addEventListener("mousedown",e=>{
- for(let i=0;i<6;i++) makeTouchHeart(e.clientX,e.clientY);
-});
-
-document.addEventListener("mousemove",e=>{
- if(e.buttons===1) makeTouchHeart(e.clientX,e.clientY);
-});
-
-/* tease animation */
+/* tease show */
 function showTease(){
  if(teaseShown) return;
  teaseShown=true;
  tease.style.display="block";
  let x=-120,dir=1;
- setInterval(()=>{
-  x+=dir*3;
+ teaseInterval=setInterval(()=>{
+  x+=dir*1.5; /* slower */
   if(x>220||x<-120) dir*=-1;
   tease.style.left=x+"px";
  },30);
+}
+
+function hideTease(){
+ if(!teaseShown) return;
+ clearInterval(teaseInterval);
+ tease.style.left="-200px";
+ setTimeout(()=>tease.style.display="none",800);
 }
 
 const steps={
@@ -176,7 +167,11 @@ function show(step){
     };
    }
   }else{
-   btn.onclick=()=>{clickSound();show(o.n)};
+   btn.onclick=()=>{
+    clickSound();
+    hideTease();
+    show(o.n);
+   };
   }
 
   buttons.appendChild(btn);
