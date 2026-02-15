@@ -1,127 +1,189 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>رسالة ل اوزعتي ❤️</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Cairo', sans-serif;
-      background: linear-gradient(120deg, #000000, #1a1a1a, #000000, #1a1a1a);
-      background-size: 400% 400%;
-      animation: bgMove 20s linear infinite;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رسالة ل اوزعتي ❤️</title>
+<style>
+body{margin:0;padding:0;overflow:hidden;font-family:'Cairo',sans-serif;background:#000;display:flex;justify-content:center;align-items:center;height:100vh}
+#frame{background:#000;border:5px solid #FF69B4;border-radius:20px;padding:20px;text-align:center;width:90%;max-width:500px;position:relative;z-index:2;overflow:hidden}
+h1{color:#fff;margin-bottom:20px;position:relative;z-index:2}
+button{background:#FF69B4;color:#fff;padding:10px 20px;margin:10px;border:none;border-radius:15px;font-size:16px;cursor:pointer;position:relative;z-index:2}
+#img,#video{margin:20px 0;max-width:80%;border-radius:15px;display:none;position:relative;z-index:2}
 
-    @keyframes bgMove {
-      0% { background-position: 0 0; }
-      50% { background-position: 100% 100%; }
-      100% { background-position: 0 0; }
-    }
+.heart{position:fixed;color:#ff4da6;font-size:14px;pointer-events:none;animation:floatUp 3s linear forwards}
+.innerHeart{position:absolute;color:#ff4da6;font-size:12px;pointer-events:none;animation:floatUp 3s linear forwards}
+@keyframes floatUp{0%{transform:translateY(0) scale(.5);opacity:0}20%{opacity:1}100%{transform:translateY(-120px) scale(1.3);opacity:0}}
 
-    #frame {
-      background-color: black;
-      border: 5px solid #FF69B4;
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      width: 90%;
-      max-width: 500px;
-    }
+#hanger{position:fixed;top:0;right:40px;width:80px;animation:swing 3s ease-in-out infinite alternate;z-index:5}
+@keyframes swing{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
 
-    h1 {
-      color: white;
-      margin-bottom: 20px;
-    }
-
-    button {
-      background-color: #FF69B4;
-      color: white;
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 15px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    button:hover {
-      transform: scale(1.1);
-    }
-
-    button:active {
-      transform: scale(0.9) rotate(-2deg);
-      transition: transform 0.1s;
-    }
-
-    #img, #video {
-      margin: 20px 0;
-      max-width: 80%;
-      border-radius: 15px;
-      display: none;
-    }
-  </style>
+#tease{position:fixed;top:10px;left:-120px;width:90px;display:none;z-index:6}
+</style>
 </head>
 <body>
-  <div id="frame">
-    <div id="app">
-      <h1 id="question"></h1>
-      <img id="img" src="cartoon1.png" />
-      <video id="video" width="100%" controls muted></video>
-      <div id="buttons"></div>
-    </div>
-  </div>
-  <script>
-    const question = document.getElementById("question");
-    const buttons = document.getElementById("buttons");
-    const img = document.getElementById("img");
-    const video = document.getElementById("video");
 
-    const steps = {
-      start: { q: "انتي بطه؟ 🦆", img: "cartoon1.png", options: [ { t: "اه", n: "confirm_call" }, { t: "لا", n: "go_out" } ] },
-      go_out: { q: "اطلعي برا ده مكان اوزعتي حبيبتي", options: [ { t: "ارجعي", n: "start" } ] },
-      confirm_call: { q: "زين بيحب يندهلك يقولك يا ايه؟", options: [ { t: "بطه", n: "shaky" }, { t: "يا اوزعة", n: "shaky_yes" }, { t: "بطوط", n: "shaky" } ] },
-      shaky: { q: "انا شاكك فيكي 😅 بس كملّي اما نشوف", options: [ { t: "كملّي", n: "love_question" } ] },
-      shaky_yes: { q: "ايوه كده انتي اوزعتي بجد 😍", options: [ { t: "كملّي", n: "love_question" } ] },
-      love_question: { q: "بتحبي زين ولا لا؟", options: [ { t: "بحبه", n: "he_loves_you" }, { t: "لا مش بحبه", n: "retry_love" }, { t: "بموت فيه", n: "he_dies_for_you" } ] },
-      retry_love: { q: "لا والله للاسف الاوبشن ده مش متوفر هتقولي اه", options: [ { t: "اه", n: "he_loves_you" } ] },
-      he_loves_you: { q: "وهو بيحبك اكتر علي فكرة", options: [ { t: "كملي", n: "question_live_without" } ] },
-      he_dies_for_you: { q: "وهو بيموت فيكي اكتر 😍", options: [ { t: "كملي", n: "question_live_without" } ] },
-      question_live_without: { q: "تفتكري زين يقدر يعيش منغيرك؟", options: [ { t: "اه", n: "live_without_no" }, { t: "لا", n: "live_without_yes" } ] },
-      live_without_yes: { q: "معاكي حق هو فعلا ميقدرش", options: [ { t: "كملي", n: "question_love_more" } ] },
-      live_without_no: { q: "يبقي متعرفيش زين", options: [ { t: "كملي", n: "question_love_more" } ] },
-      question_love_more: { q: "تفتكري زين بيحب حد اكتر منك؟", options: [ { t: "اه", n: "love_more_yes" }, { t: "لا", n: "love_more_no" } ] },
-      love_more_yes: { q: "لسه مش عارفة زين شكلك كدا", options: [ { t: "كملي", n: "question_stop" } ] },
-      love_more_no: { q: "طب ما انتي عارفة اني بحبك اهو اومال ايه يا اوزعة", options: [ { t: "كملي", n: "question_stop" } ] },
-      question_stop: { q: "كفاية كدا علشان معطلكيش بقي ناقص بس اخر حاجة", options: [ { t: "كملي", n: "final_question" } ] },
-      final_question: { q: "علشان الرسالة دي سرية لازم تختاري تاريخ أول يوم عرفتيني فيه", options: [ { t: "21/12/2021", n: "wrong_date" }, { t: "22/12/2021", n: "wrong_date" }, { t: "24/12/2021", n: "correct_date" } ] },
-      wrong_date: { q: "ياخسارة خذلتيني 😢", options: [ { t: "ارجعي", n: "final_question" } ] },
-      correct_date: { q: "بحبك يا اوزعتي ❤️", video: "final.mp4", options: [], playVideo: true }
+<img id="hanger" src="hanger.png">
+<img id="tease" src="tease.png">
+
+<div id="frame">
+<div id="app">
+<h1 id="question"></h1>
+<img id="img" src="cartoon1.png"/>
+<video id="video" width="100%" controls muted></video>
+<div id="buttons"></div>
+</div>
+</div>
+
+<script>
+const question=document.getElementById("question");
+const buttons=document.getElementById("buttons");
+const img=document.getElementById("img");
+const video=document.getElementById("video");
+const frame=document.getElementById("frame");
+const tease=document.getElementById("tease");
+
+const words=["Oz3aa","Batooty","BatooT"];
+let noClicks=0;
+let teaseShown=false;
+let isTouch='ontouchstart' in window;
+
+/* preload sound */
+const clickAudio=new Audio("click.mp3");
+function clickSound(){
+ clickAudio.currentTime=0;
+ clickAudio.play().catch(()=>{});
+}
+
+/* random hearts */
+function spawnHeart(){
+ const h=document.createElement("div");
+ h.className="heart";
+ h.innerHTML="❤ "+words[Math.floor(Math.random()*words.length)];
+ h.style.left=Math.random()*window.innerWidth+"px";
+ h.style.top=Math.random()*window.innerHeight+"px";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),3000);
+
+ const h2=document.createElement("div");
+ h2.className="innerHeart";
+ h2.innerHTML="❤ "+words[Math.floor(Math.random()*words.length)];
+ h2.style.left=Math.random()*frame.clientWidth+"px";
+ h2.style.top=Math.random()*frame.clientHeight+"px";
+ frame.appendChild(h2);
+ setTimeout(()=>h2.remove(),3000);
+}
+setInterval(spawnHeart,900);
+
+/* touch hearts FIXED */
+function makeTouchHeart(x,y){
+ const h=document.createElement("div");
+ h.className="heart";
+ h.innerHTML="❤";
+ h.style.left=x+"px";
+ h.style.top=y+"px";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),2000);
+}
+
+let touching=false;
+
+document.addEventListener("touchstart",e=>{
+ touching=true;
+ const t=e.touches[0];
+ for(let i=0;i<6;i++) makeTouchHeart(t.clientX,t.clientY);
+});
+
+document.addEventListener("touchmove",e=>{
+ if(!touching) return;
+ const t=e.touches[0];
+ makeTouchHeart(t.clientX,t.clientY);
+});
+
+document.addEventListener("touchend",()=>touching=false);
+
+/* mouse */
+document.addEventListener("mousedown",e=>{
+ for(let i=0;i<6;i++) makeTouchHeart(e.clientX,e.clientY);
+});
+
+document.addEventListener("mousemove",e=>{
+ if(e.buttons===1) makeTouchHeart(e.clientX,e.clientY);
+});
+
+/* tease animation */
+function showTease(){
+ if(teaseShown) return;
+ teaseShown=true;
+ tease.style.display="block";
+ let x=-120,dir=1;
+ setInterval(()=>{
+  x+=dir*3;
+  if(x>220||x<-120) dir*=-1;
+  tease.style.left=x+"px";
+ },30);
+}
+
+const steps={
+start:{q:"انتي بطه؟ 🦆",img:"cartoon1.png",options:[{t:"اه",n:"confirm_call"},{t:"لا",n:"go_out"}]},
+go_out:{q:"اطلعي برا ده مكان اوزعتي حبيبتي",options:[{t:"ارجعي",n:"start"}]},
+confirm_call:{q:"زين بيحب يندهلك يقولك يا ايه؟",options:[{t:"بطه",n:"shaky"},{t:"يا اوزعة",n:"shaky_yes"},{t:"بطوط",n:"shaky"}]},
+shaky:{q:"انا شاكك فيكي 😅 بس كملّي اما نشوف",options:[{t:"كملّي",n:"love_question"}]},
+shaky_yes:{q:"ايوه كده انتي اوزعتي بجد 😍",options:[{t:"كملّي",n:"love_question"}]},
+love_question:{q:"بتحبي زين ولا لا؟",options:[{t:"بحبه",n:"he_loves_you"},{t:"لا",n:"move_no"},{t:"بموت فيه",n:"he_dies_for_you"}]},
+he_loves_you:{q:"وهو بيحبك اكتر علي فكرة",options:[{t:"كملي",n:"question_live_without"}]},
+he_dies_for_you:{q:"وهو بيموت فيكي اكتر 😍",options:[{t:"كملي",n:"question_live_without"}]},
+question_live_without:{q:"تفتكري زين يقدر يعيش منغيرك؟",options:[{t:"اه",n:"live_without_no"},{t:"لا",n:"live_without_yes"}]},
+live_without_yes:{q:"معاكي حق هو فعلا ميقدرش",options:[{t:"كملي",n:"question_love_more"}]},
+live_without_no:{q:"يبقي متعرفيش زين",options:[{t:"كملي",n:"question_love_more"}]},
+question_love_more:{q:"تفتكري زين بيحب حد اكتر منك؟",options:[{t:"اه",n:"love_more_yes"},{t:"لا",n:"love_more_no"}]},
+love_more_yes:{q:"لسه مش عارفة زين شكلك كدا",options:[{t:"كملي",n:"question_stop"}]},
+love_more_no:{q:"طب ما انتي عارفة اني بحبك اهو اومال ايه يا اوزعة",options:[{t:"كملي",n:"question_stop"}]},
+question_stop:{q:"كفاية كدا علشان معطلكيش بقي ناقص بس اخر حاجة",options:[{t:"كملي",n:"final_question"}]},
+final_question:{q:"علشان الرسالة دي سرية لازم تختاري تاريخ أول يوم عرفتيني فيه",options:[{t:"21/12/2021",n:"wrong_date"},{t:"22/12/2021",n:"wrong_date"},{t:"24/12/2021",n:"correct_date"}]},
+wrong_date:{q:"ياخسارة خذلتيني 😢",options:[{t:"ارجعي",n:"final_question"}]},
+correct_date:{q:"بحبك يا اوزعتي ❤️",video:"final.mp4",options:[]}
+};
+
+function show(step){
+ const s=steps[step];
+ question.innerText=s.q;
+ buttons.innerHTML="";
+ if(s.img){img.src=s.img;img.style.display="block"} else img.style.display="none";
+ if(s.video){video.src=s.video;video.style.display="block";video.play()} else{video.style.display="none";video.pause()}
+
+ s.options.forEach(o=>{
+  const btn=document.createElement("button");
+  btn.innerText=o.t;
+
+  if(o.n==="move_no"){
+   btn.onclick=()=>{
+    clickSound();
+    noClicks++;
+    btn.style.position="fixed";
+    btn.style.left=Math.random()*(window.innerWidth-100)+"px";
+    btn.style.top=Math.random()*(window.innerHeight-50)+"px";
+    if(noClicks>=3) showTease();
+   };
+
+   if(!isTouch){
+    btn.onmouseover=()=>{
+     noClicks++;
+     btn.style.position="fixed";
+     btn.style.left=Math.random()*(window.innerWidth-100)+"px";
+     btn.style.top=Math.random()*(window.innerHeight-50)+"px";
+     if(noClicks>=3) showTease();
     };
+   }
+  }else{
+   btn.onclick=()=>{clickSound();show(o.n)};
+  }
 
-    function show(step) {
-      const s = steps[step];
-      question.innerText = s.q;
-      buttons.innerHTML = "";
+  buttons.appendChild(btn);
+ });
+}
 
-      if(s.img){ img.src = s.img; img.style.display = "block"; } else { img.style.display = "none"; }
-      if(s.video){ video.src = s.video; video.style.display = "block"; video.autoplay = true; video.play(); } else { video.style.display = "none"; video.pause(); video.currentTime = 0; }
-
-      s.options.forEach(o => {
-        const btn = document.createElement("button");
-        btn.innerText = o.t;
-        btn.onclick = () => show(o.n);
-        buttons.appendChild(btn);
-      });
-    }
-
-    show("start");
-  </script>
+show("start");
+</script>
 </body>
 </html>
