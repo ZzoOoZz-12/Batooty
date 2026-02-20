@@ -31,7 +31,7 @@ button{background:#FF69B4;color:#fff;padding:10px 25px;border:none;border-radius
 #final img{
   width:100vw;
   height:100vh;
-  object-fit:contain; /* مظبوطة على الموبايل */
+  object-fit:contain;
   background:black;
 }
 
@@ -80,15 +80,6 @@ button{background:#FF69B4;color:#fff;padding:10px 25px;border:none;border-radius
 <div id="final">
   <img src="final.jpg" alt="final">
   <div id="finalText">بحبك يا اوزعتي ❤️</div>
-</div>
-
-<!-- زرار النسخة القديمة -->
-<div style="text-align:center; margin-top:20px;">
-  <a href="old.html">
-    <button style="padding:10px 20px; font-size:16px; cursor:pointer;">
-      أكمل لنسختك القديمة
-    </button>
-  </a>
 </div>
 
 <script>
@@ -147,6 +138,7 @@ function goFinal(){
   document.getElementById("final").style.display="block";
   document.getElementById("finalMusic").play().catch(()=>{});
   startLoveStorm();
+  addOldVersionButton(); // اضافة الزر هنا
 }
 
 /* ===== LOVE STORM EFFECT ===== */
@@ -185,6 +177,35 @@ finalScreen.addEventListener("pointerdown",e=>{
   setTimeout(()=>h.remove(),6000);
  }
 });
+
+// ==== زرار النسخة القديمة يظهر فقط في النهاية ====
+function addOldVersionButton(){
+  if(document.getElementById("oldVersionBtn")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "oldVersionBtn";
+  btn.innerText = "كملي لنسختك القديمة";
+  btn.style.cssText = `
+    margin-top:20px;
+    padding:10px 20px;
+    font-size:16px;
+    cursor:pointer;
+    border:none;
+    border-radius:12px;
+    background:#FF69B4;
+    color:white;
+  `;
+  btn.onclick = ()=>{ window.location.href = "old.html"; };
+
+  const finalDiv = document.getElementById("final");
+  finalDiv.appendChild(btn);
+
+  // وضعه تحت النص
+  btn.style.position = "absolute";
+  btn.style.bottom = "60px";
+  btn.style.left = "50%";
+  btn.style.transform = "translateX(-50%)";
+}
 </script>
 </body>
 </html>
