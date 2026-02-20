@@ -3,182 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>رسالة ل اوزعتي ❤️</title>
+<title>رسالة سرية ❤️</title>
 <style>
 body{margin:0;padding:0;overflow:hidden;font-family:'Cairo',sans-serif;background:#000;display:flex;justify-content:center;align-items:center;height:100vh}
-#frame{background:#000;border:5px solid #FF69B4;border-radius:20px;padding:20px;text-align:center;width:90%;max-width:500px;position:relative;z-index:2;overflow:hidden}
-h1{color:#fff;margin-bottom:20px;position:relative;z-index:2}
-button{background:#FF69B4;color:#fff;padding:10px 20px;margin:10px;border:none;border-radius:15px;font-size:16px;cursor:pointer;position:relative;z-index:2}
-#img,#video{margin:20px 0;max-width:80%;border-radius:15px;display:none;position:relative;z-index:2}
+#frame{background:#000;border:4px solid #FF69B4;border-radius:20px;padding:25px;text-align:center;width:90%;max-width:500px;position:relative;z-index:2;overflow:hidden}
+h1,p{color:#fff}
+input{width:80%;padding:12px;border-radius:10px;border:none;text-align:center;font-size:16px;margin:15px 0}
+button{background:#FF69B4;color:#fff;padding:10px 25px;border:none;border-radius:15px;font-size:16px;cursor:pointer}
+.error{color:#ff4d4d;margin-top:10px}
 
-.heart{position:fixed;color:#ff4da6;font-size:14px;pointer-events:none;animation:floatUp 3s linear forwards}
-.innerHeart{position:absolute;color:#ff4da6;font-size:12px;pointer-events:none;animation:floatUp 3s linear forwards}
-@keyframes floatUp{0%{transform:translateY(0) scale(.5);opacity:0}20%{opacity:1}100%{transform:translateY(-120px) scale(1.3);opacity:0}}
+.heart{position:fixed;color:#ff4da6;font-size:16px;pointer-events:none;animation:floatUp 6s linear forwards}
+.innerHeart{position:absolute;color:#ff4da6;font-size:14px;pointer-events:none;animation:floatUp 6s linear forwards}
 
-#hanger{position:fixed;top:0;right:40px;width:80px;animation:swing 3s ease-in-out infinite alternate;z-index:5}
-@keyframes swing{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@keyframes floatUp{
+  0%{transform:translateY(0) scale(.6);opacity:0}
+  10%{opacity:1}
+  100%{transform:translateY(-180vh) scale(1.5);opacity:0}
+}
 
-#tease{position:fixed;top:10px;left:-120px;width:90px;display:none;z-index:6;transition:left .8s}
+#final{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10;
+}
+
+#final img{
+  width:100vw;
+  height:100vh;
+  object-fit:contain; /* مظبوطة على الموبايل */
+  background:black;
+}
+
+#finalText{
+  position:absolute;
+  bottom:25px;
+  width:100%;
+  text-align:center;
+  color:#fff;
+  font-size:26px;
+  font-weight:bold;
+  z-index:5;
+}
 </style>
 </head>
 <body>
 
-<img id="hanger" src="hanger.png">
-<img id="tease" src="tease.png">
+<audio id="bgMusic" src="bg.mp3" loop></audio>
+<audio id="finalMusic" src="final.mp3" loop></audio>
 
 <div id="frame">
-<div id="app">
-<h1 id="question"></h1>
-<img id="img" src="cartoon1.png"/>
-<video id="video" width="100%" controls muted></video>
-<div id="buttons"></div>
+  <div id="login">
+    <h1>اكتبي الباسورد ❤️</h1>
+    <p>(الباسورد اسمك انتي)</p>
+    <input type="text" id="password" placeholder="اكتبي الباسورد هنا">
+    <br>
+    <button onclick="playClick(); checkPassword();">دخول</button>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div id="message" style="display:none;">
+    <h1>❤️وحشتيني يا اوزعة❤️</h1>
+    <p style="line-height:1.9; font-size:18px">
+ بما انك دخلتي اللنك ده معناه اني وحشتك ❤️<br>
+      ولو انتي متعرفيش ف انتي وحشتيني اكتر بكتير 🥺<br><br>
+     ❤️ وبحبك مووت بجد ❤️<br><br>
+      احنا الاتنين اغبياء في اللي بنعمله ده 🙃<br>
+     💔 بس انا والله العظيم مش عايز اخسرك <br><br>
+     ❤️ انتي وبس اللي تملي عيني  ❤️<br>
+      🫶 وقلبي مفيهوش حد غيرك والله يا اوزعتي 🫶
+    </p>
+    <button onclick="goFinal()">كملي</button>
+  </div>
 </div>
+
+<div id="final">
+  <img src="final.jpg" alt="final">
+  <div id="finalText">بحبك يا اوزعتي ❤️</div>
 </div>
 
 <script>
-const question=document.getElementById("question");
-const buttons=document.getElementById("buttons");
-const img=document.getElementById("img");
-const video=document.getElementById("video");
-const frame=document.getElementById("frame");
-const tease=document.getElementById("tease");
+const validNames = [
+  "بطه","بطة","اوزعه","اوزعة","بطوط",
+  "bata","batoot","oz3aa"
+];
 
-const words=["Oz3aa","Batooty","BatooT"];
-let noClicks=0;
-let teaseShown=false;
-let teaseInterval=null;
-let isTouch='ontouchstart' in window;
+function normalize(text){
+  return text.toLowerCase().trim();
+}
 
-const clickAudio=new Audio("click.mp3");
-function clickSound(){clickAudio.currentTime=0;clickAudio.play().catch(()=>{})}
+const clickAudio = new Audio("click.mp3");
+function playClick(){
+  clickAudio.currentTime = 0;
+  clickAudio.play().catch(()=>{});
+}
 
-/* hearts spawn */
+function checkPassword(){
+  const input = document.getElementById("password").value;
+  const error = document.getElementById("error");
+
+  if(!input){
+    error.innerText = "اكتبي الاسم الاول";
+    return;
+  }
+
+  const val = normalize(input);
+  const ok = validNames.some(n => normalize(n) === val);
+
+  if(ok){
+    document.getElementById("login").style.display="none";
+    document.getElementById("message").style.display="block";
+    document.getElementById("bgMusic").play().catch(()=>{});
+  } else {
+    error.innerText = "مش ده الاسم اللي يستحق اني اعمل اللنك ده علشانه";
+  }
+}
+
+// background hearts
 function spawnHeart(){
  const h=document.createElement("div");
  h.className="heart";
- h.innerHTML="❤ "+words[Math.floor(Math.random()*words.length)];
+ h.innerHTML="❤";
  h.style.left=Math.random()*window.innerWidth+"px";
- h.style.top=Math.random()*window.innerHeight+"px";
+ h.style.top=window.innerHeight+20+"px";
  document.body.appendChild(h);
- setTimeout(()=>h.remove(),3000);
-
- const h2=document.createElement("div");
- h2.className="innerHeart";
- h2.innerHTML="❤ "+words[Math.floor(Math.random()*words.length)];
- h2.style.left=Math.random()*frame.clientWidth+"px";
- h2.style.top=Math.random()*frame.clientHeight+"px";
- frame.appendChild(h2);
- setTimeout(()=>h2.remove(),3000);
+ setTimeout(()=>h.remove(),6000);
 }
 setInterval(spawnHeart,900);
 
-/* touch hearts everywhere including frame */
-function makeTouchHeart(x,y){
- const h=document.createElement("div");
- h.className="heart";
- h.innerHTML="❤";
- h.style.left=x+"px";
- h.style.top=y+"px";
- document.body.appendChild(h);
- setTimeout(()=>h.remove(),2000);
+function goFinal(){
+  playClick();
+  document.getElementById("bgMusic").pause();
+  document.getElementById("frame").style.display="none";
+  document.getElementById("final").style.display="block";
+  document.getElementById("finalMusic").play().catch(()=>{});
+  startLoveStorm();
 }
 
-function touchHearts(e){
- const x=e.clientX || (e.touches && e.touches[0].clientX);
- const y=e.clientY || (e.touches && e.touches[0].clientY);
- if(!x) return;
- makeTouchHeart(x,y);
+/* ===== LOVE STORM EFFECT ===== */
+const loveWords = ["❤","❤","❤","Oz3aa","Batoot"];
+
+function createFloatingLove(){
+  const el = document.createElement("div");
+  el.className = "heart";
+  el.innerText = loveWords[Math.floor(Math.random()*loveWords.length)];
+
+  el.style.left = Math.random()*window.innerWidth + "px";
+  el.style.top = window.innerHeight + "px";
+  el.style.fontSize = (Math.random()*14 + 16) + "px";
+
+  document.getElementById("final").appendChild(el);
+
+  setTimeout(()=>el.remove(),6000);
 }
 
-document.addEventListener("pointerdown",e=>{for(let i=0;i<6;i++) touchHearts(e)});
-document.addEventListener("pointermove",e=>{if(e.pressure>0||e.buttons) touchHearts(e)});
-frame.addEventListener("pointerdown",e=>{for(let i=0;i<6;i++) touchHearts(e)});
-frame.addEventListener("pointermove",e=>{if(e.pressure>0||e.buttons) touchHearts(e)});
-
-/* tease show */
-function showTease(){
- if(teaseShown) return;
- teaseShown=true;
- tease.style.display="block";
- let x=-120,dir=1;
- teaseInterval=setInterval(()=>{
-  x+=dir*1.5; /* slower */
-  if(x>220||x<-120) dir*=-1;
-  tease.style.left=x+"px";
- },30);
+function startLoveStorm(){
+  setInterval(()=>{
+    for(let i=0;i<6;i++) createFloatingLove();
+  },600);
 }
 
-function hideTease(){
- if(!teaseShown) return;
- clearInterval(teaseInterval);
- tease.style.left="-200px";
- setTimeout(()=>tease.style.display="none",800);
-}
-
-const steps={
-start:{q:"انتي بطه؟ 🦆",img:"cartoon1.png",options:[{t:"اه",n:"confirm_call"},{t:"لا",n:"go_out"}]},
-go_out:{q:"اطلعي برا ده مكان اوزعتي حبيبتي",options:[{t:"ارجعي",n:"start"}]},
-confirm_call:{q:"زين بيحب يندهلك يقولك يا ايه؟",options:[{t:"بطه",n:"shaky"},{t:"يا اوزعة",n:"shaky_yes"},{t:"بطوط",n:"shaky"}]},
-shaky:{q:"انا شاكك فيكي 😅 بس كملّي اما نشوف",options:[{t:"كملّي",n:"love_question"}]},
-shaky_yes:{q:"ايوه كده انتي اوزعتي بجد 😍",options:[{t:"كملّي",n:"love_question"}]},
-love_question:{q:"بتحبي زين ولا لا؟",options:[{t:"بحبه",n:"he_loves_you"},{t:"لا",n:"move_no"},{t:"بموت فيه",n:"he_dies_for_you"}]},
-he_loves_you:{q:"وهو بيحبك اكتر علي فكرة",options:[{t:"كملي",n:"question_live_without"}]},
-he_dies_for_you:{q:"وهو بيموت فيكي اكتر 😍",options:[{t:"كملي",n:"question_live_without"}]},
-question_live_without:{q:"تفتكري زين يقدر يعيش منغيرك؟",options:[{t:"اه",n:"live_without_no"},{t:"لا",n:"live_without_yes"}]},
-live_without_yes:{q:"معاكي حق هو فعلا ميقدرش",options:[{t:"كملي",n:"question_love_more"}]},
-live_without_no:{q:"يبقي متعرفيش زين",options:[{t:"كملي",n:"question_love_more"}]},
-question_love_more:{q:"تفتكري زين بيحب حد اكتر منك؟",options:[{t:"اه",n:"love_more_yes"},{t:"لا",n:"love_more_no"}]},
-love_more_yes:{q:"لسه مش عارفة زين شكلك كدا",options:[{t:"كملي",n:"question_stop"}]},
-love_more_no:{q:"طب ما انتي عارفة اني بحبك اهو اومال ايه يا اوزعة",options:[{t:"كملي",n:"question_stop"}]},
-question_stop:{q:"كفاية كدا علشان معطلكيش بقي ناقص بس اخر حاجة",options:[{t:"كملي",n:"final_question"}]},
-final_question:{q:"علشان الرسالة دي سرية لازم تختاري تاريخ أول يوم عرفتيني فيه",options:[{t:"21/12/2021",n:"wrong_date"},{t:"22/12/2021",n:"wrong_date"},{t:"24/12/2021",n:"correct_date"}]},
-wrong_date:{q:"ياخسارة خذلتيني 😢",options:[{t:"ارجعي",n:"final_question"}]},
-correct_date:{q:"بحبك يا اوزعتي ❤️",video:"final.mp4",options:[]}
-};
-
-function show(step){
- const s=steps[step];
- question.innerText=s.q;
- buttons.innerHTML="";
- if(s.img){img.src=s.img;img.style.display="block"} else img.style.display="none";
- if(s.video){video.src=s.video;video.style.display="block";video.play()} else{video.style.display="none";video.pause()}
-
- s.options.forEach(o=>{
-  const btn=document.createElement("button");
-  btn.innerText=o.t;
-
-  if(o.n==="move_no"){
-   btn.onclick=()=>{
-    clickSound();
-    noClicks++;
-    btn.style.position="fixed";
-    btn.style.left=Math.random()*(window.innerWidth-100)+"px";
-    btn.style.top=Math.random()*(window.innerHeight-50)+"px";
-    if(noClicks>=3) showTease();
-   };
-
-   if(!isTouch){
-    btn.onmouseover=()=>{
-     noClicks++;
-     btn.style.position="fixed";
-     btn.style.left=Math.random()*(window.innerWidth-100)+"px";
-     btn.style.top=Math.random()*(window.innerHeight-50)+"px";
-     if(noClicks>=3) showTease();
-    };
-   }
-  }else{
-   btn.onclick=()=>{
-    clickSound();
-    hideTease();
-    show(o.n);
-   };
-  }
-
-  buttons.appendChild(btn);
- });
-}
-
-show("start");
+// touch hearts on final screen
+const finalScreen = document.getElementById("final");
+finalScreen.addEventListener("pointerdown",e=>{
+ for(let i=0;i<8;i++){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤";
+  h.style.left=e.clientX+Math.random()*40-20+"px";
+  h.style.top=e.clientY+Math.random()*40-20+"px";
+  finalScreen.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+ }
+});
 </script>
 </body>
 </html>
